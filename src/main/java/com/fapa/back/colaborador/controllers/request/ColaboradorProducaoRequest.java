@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColaboradorProducaoRequest extends ColaboradorRequest {
-    @NotNull(message = "Quantidade das vendas é obrigatório")
-    @PositiveOrZero(message = "Quantidade das vendas deve ser maior ou igual a zero")
+    @NotNull(message = "Quantidade produzida é obrigatório")
+    @PositiveOrZero(message = "Quantidade produzida deve ser maior ou igual a zero")
     private Integer quantidadeProduzida;
     @NotNull(message = "Valor da unidade produzida é obrigatório")
     @PositiveOrZero(message = "Valor da unidade produzida deve ser maior ou igual a zero")

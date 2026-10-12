@@ -1,5 +1,7 @@
 package com.fapa.back.colaborador.services.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +17,7 @@ import com.fapa.back.colaborador.mappers.ColaboradorMapper;
 import com.fapa.back.colaborador.repositories.ColaboradorRepository;
 import com.fapa.back.colaborador.services.BuscarColaboradorPorIdService;
 import com.fapa.back.colaborador.services.ColaboradorService;
-import com.fapa.back.shared.exceptions.BadRequestException;
-import com.fapa.back.shared.exceptions.ConflictException;
-import com.fapa.back.shared.exceptions.NotFoundException;
+import com.fapa.back.colaborador.services.validators.ColaboradorServiceValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +27,7 @@ public class ColaboradorServiceImpl implements ColaboradorService {
     
     private final ColaboradorRepository colaboradorRepository;
     private final BuscarColaboradorPorIdService buscarColaboradorPorIdService;
+    private final ColaboradorServiceValidator colaboradorServiceValidator;
 
     @Override
     public Page<ColaboradorListResponse> listar(
@@ -47,34 +48,34 @@ public class ColaboradorServiceImpl implements ColaboradorService {
     }
 
     @Override
-    public ColaboradorDetailResponse criar(ColaboradorRequest colaborador) {
-        if (this.colaboradorRepository.existsByMatricula(colaborador.getMatricula())) {
-            throw new ConflictException("Colaborador com a matrícula " + colaborador.getMatricula() + " já existe.");
-        }
-        Colaborador entity = ColaboradorMapper.toEntity(colaborador);
+    public ColaboradorDetailResponse criar(ColaboradorRequest request) {
+        this.colaboradorServiceValidator.validarMatriculaExistente(request.getMatricula());
+        Colaborador entity = ColaboradorMapper.toEntity(request);
+        entity.setCriadoEm(LocalDateTime.now());
         return ColaboradorMapper.toDetailResponse(this.colaboradorRepository.save(entity));
     }
 
     @Override
-    public ColaboradorDetailResponse atualizar(Long id, ColaboradorRequest colaborador) {
+    public ColaboradorDetailResponse atualizar(Long id, ColaboradorRequest request) {
         Colaborador existingColaborador = this.buscarColaboradorPorIdService.buscarPorId(id);
-        boolean isMatriculaChanged = !existingColaborador.getMatricula().equals(colaborador.getMatricula());
-        if (isMatriculaChanged && this.colaboradorRepository.existsByMatricula(colaborador.getMatricula())) {
-            throw new ConflictException("Colaborador com a matrícula " + colaborador.getMatricula() + " já existe.");
-        }
-        boolean isTipoColaboradorChanged = !existingColaborador.getTipoColaborador().name().equals(colaborador.getTipoColaborador());
+        this.colaboradorServiceValidator.validarMatriculaExistenteParaAtualizacao(existingColaborador.getMatricula(), existingColaborador, request);
+        boolean isTipoColaboradorChanged = !existingColaborador.getTipoColaborador().name().equals(request.getTipoColaborador());
         if (isTipoColaboradorChanged) {
-            throw new BadRequestException("Não é permitido alterar o tipo de colaborador. Por favor, crie um novo colaborador com o tipo desejado.");
+            LocalDateTime criadoEm = existingColaborador.getCriadoEm(); 
+            existingColaborador = ColaboradorMapper.toEntity(request);
+            existingColaborador.setCriadoEm(criadoEm);
+            this.colaboradorRepository.deleteById(id);
         }
-        ColaboradorMapper.atualizarEntidade(existingColaborador, colaborador);
+        else {
+            ColaboradorMapper.atualizarEntidade(existingColaborador, request);
+        }
+        existingColaborador.setAtualizadoEm(LocalDateTime.now());
         return ColaboradorMapper.toDetailResponse(this.colaboradorRepository.save(existingColaborador));
     }
 
     @Override
     public void deletar(Long id) {
-        if (!this.colaboradorRepository.existsById(id)) {
-            throw new NotFoundException("Colaborador não encontrado com o ID: " + id);
-        }
+        this.buscarColaboradorPorIdService.buscarPorId(id);
         this.colaboradorRepository.deleteById(id);
     }
 

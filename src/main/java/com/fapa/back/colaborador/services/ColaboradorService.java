@@ -12,7 +12,7 @@ public interface ColaboradorService {
         String nomeMatricula, String tipoColaborador
     );
     ColaboradorDetailResponse obterPorId(Long id);
-    ColaboradorDetailResponse criar(ColaboradorRequest colaborador);
-    ColaboradorDetailResponse atualizar(Long id, ColaboradorRequest colaborador);
+    ColaboradorDetailResponse criar(ColaboradorRequest request);
+    ColaboradorDetailResponse atualizar(Long id, ColaboradorRequest request);
     void deletar(Long id);
 }

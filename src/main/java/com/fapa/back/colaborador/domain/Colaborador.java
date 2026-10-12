@@ -1,6 +1,7 @@
 package com.fapa.back.colaborador.domain;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.fapa.back.colaborador.enums.TipoColaborador;
 
@@ -42,6 +43,8 @@ public abstract class Colaborador {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoColaborador tipoColaborador;
+    private LocalDateTime criadoEm;
+    private LocalDateTime atualizadoEm;
 
     public abstract BigDecimal calcularAdicionais();
     public abstract BigDecimal calcularSalarioFinal();
