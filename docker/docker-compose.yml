@@ -3,7 +3,7 @@ services:
     image: postgres:14-alpine
     container_name: dev-postgresql
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: projeto_qa
       POSTGRES_PASSWORD: 1234567
     ports:
       - 5433:5432
