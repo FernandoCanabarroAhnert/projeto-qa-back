@@ -10,10 +10,10 @@ import com.fapa.back.colaborador.controllers.response.ColaboradorDetailResponse;
 import com.fapa.back.colaborador.controllers.response.ColaboradorListResponse;
 import com.fapa.back.colaborador.domain.Colaborador;
 import com.fapa.back.colaborador.enums.TipoColaborador;
-import com.fapa.back.colaborador.strategy.ColaboradorComissionadoMapperStrategy;
-import com.fapa.back.colaborador.strategy.ColaboradorMapperStrategy;
-import com.fapa.back.colaborador.strategy.ColaboradorPadraoMapperStrategy;
-import com.fapa.back.colaborador.strategy.ColaboradorProducaoMapperStrategy;
+import com.fapa.back.colaborador.mappers.strategy.ColaboradorComissionadoMapperStrategy;
+import com.fapa.back.colaborador.mappers.strategy.ColaboradorMapperStrategy;
+import com.fapa.back.colaborador.mappers.strategy.ColaboradorPadraoMapperStrategy;
+import com.fapa.back.colaborador.mappers.strategy.ColaboradorProducaoMapperStrategy;
 
 @Component 
 public class ColaboradorMapper {

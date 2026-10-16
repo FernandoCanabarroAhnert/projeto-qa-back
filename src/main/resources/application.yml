@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: default
   datasource:
     url: jdbc:postgresql://localhost:5433/projeto_qa?autoreconnect=true
     username: postgres
@@ -9,7 +11,7 @@ spring:
       platform: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQL14Dialect
     properties:
       hibernate:

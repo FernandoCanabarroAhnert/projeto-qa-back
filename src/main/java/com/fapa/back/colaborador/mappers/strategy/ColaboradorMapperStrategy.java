@@ -1,4 +1,4 @@
-package com.fapa.back.colaborador.strategy;
+package com.fapa.back.colaborador.mappers.strategy;
 
 import com.fapa.back.colaborador.controllers.request.ColaboradorRequest;
 import com.fapa.back.colaborador.controllers.response.ColaboradorDetailResponse;

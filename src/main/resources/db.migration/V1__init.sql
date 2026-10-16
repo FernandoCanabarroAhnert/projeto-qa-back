@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS colaborador
     nome character varying(255) NOT NULL,
     salario_base numeric(38,2) NOT NULL,
     tipo_colaborador character varying(255) NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT colaborador_pkey PRIMARY KEY (id),
     CONSTRAINT ukdnnhvr68rfwe47gasygd3nvx2 UNIQUE (matricula),
     CONSTRAINT colaborador_tipo_colaborador_check CHECK (tipo_colaborador::text = ANY (ARRAY['PADRAO'::character varying, 'COMISSIONADO'::character varying, 'PRODUCAO'::character varying]::text[]))

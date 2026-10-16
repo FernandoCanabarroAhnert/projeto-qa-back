@@ -2,6 +2,7 @@ package com.fapa.back.colaborador.controllers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fapa.back.colaborador.controllers.request.ColaboradorRequest;
 import com.fapa.back.colaborador.controllers.response.ColaboradorDetailResponse;
 import com.fapa.back.colaborador.controllers.response.ColaboradorListResponse;
+import com.fapa.back.colaborador.controllers.response.ResumoFolhaPagamentoResponse;
 import com.fapa.back.colaborador.services.ColaboradorService;
 import com.fapa.back.jasper.JasperService;
 
@@ -55,7 +57,7 @@ public class ColaboradorController {
     @PostMapping
     public ResponseEntity<ColaboradorDetailResponse> criar(@RequestBody @Valid ColaboradorRequest colaborador) {
         ColaboradorDetailResponse novoColaborador = colaboradorService.criar(colaborador);
-        return ResponseEntity.ok(novoColaborador);
+        return ResponseEntity.status(201).body(novoColaborador);
     }
 
     @PutMapping("/{id}")
@@ -68,6 +70,11 @@ public class ColaboradorController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         colaboradorService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/resumo/json")
+    public ResponseEntity<List<ResumoFolhaPagamentoResponse>> gerarResumoJson() {
+        return ResponseEntity.ok(colaboradorService.gerarResumoFolhaPagamento());
     }
 
     @GetMapping("/folha/pdf")

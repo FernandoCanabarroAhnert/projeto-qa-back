@@ -1,4 +1,4 @@
-package com.fapa.back.colaborador.strategy;
+package com.fapa.back.colaborador.mappers.strategy;
 
 import java.math.RoundingMode;
 

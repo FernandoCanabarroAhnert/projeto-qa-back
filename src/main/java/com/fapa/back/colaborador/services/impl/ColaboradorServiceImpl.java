@@ -1,6 +1,9 @@
 package com.fapa.back.colaborador.services.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.fapa.back.colaborador.controllers.request.ColaboradorRequest;
 import com.fapa.back.colaborador.controllers.response.ColaboradorDetailResponse;
 import com.fapa.back.colaborador.controllers.response.ColaboradorListResponse;
+import com.fapa.back.colaborador.controllers.response.ResumoFolhaPagamentoResponse;
 import com.fapa.back.colaborador.domain.Colaborador;
 import com.fapa.back.colaborador.enums.TipoColaborador;
 import com.fapa.back.colaborador.mappers.ColaboradorMapper;
@@ -49,14 +53,17 @@ public class ColaboradorServiceImpl implements ColaboradorService {
 
     @Override
     public ColaboradorDetailResponse criar(ColaboradorRequest request) {
+        this.colaboradorServiceValidator.validarDados(request);
         this.colaboradorServiceValidator.validarMatriculaExistente(request.getMatricula());
         Colaborador entity = ColaboradorMapper.toEntity(request);
         entity.setCriadoEm(LocalDateTime.now());
+        entity.setAtualizadoEm(LocalDateTime.now());
         return ColaboradorMapper.toDetailResponse(this.colaboradorRepository.save(entity));
     }
 
     @Override
     public ColaboradorDetailResponse atualizar(Long id, ColaboradorRequest request) {
+        this.colaboradorServiceValidator.validarDados(request);
         Colaborador existingColaborador = this.buscarColaboradorPorIdService.buscarPorId(id);
         this.colaboradorServiceValidator.validarMatriculaExistenteParaAtualizacao(existingColaborador.getMatricula(), existingColaborador, request);
         boolean isTipoColaboradorChanged = !existingColaborador.getTipoColaborador().name().equals(request.getTipoColaborador());
@@ -77,6 +84,18 @@ public class ColaboradorServiceImpl implements ColaboradorService {
     public void deletar(Long id) {
         this.buscarColaboradorPorIdService.buscarPorId(id);
         this.colaboradorRepository.deleteById(id);
+    }
+
+    @Override 
+    public List<ResumoFolhaPagamentoResponse> gerarResumoFolhaPagamento() {
+        return this.colaboradorRepository.getResumoFolhaPagamento()
+            .stream()
+            .map(projection -> new ResumoFolhaPagamentoResponse(
+                projection.getTipo(),
+                projection.getQuantidade(),
+                BigDecimal.valueOf(projection.getValorTotal()).setScale(2, RoundingMode.HALF_UP)
+            ))
+            .toList();
     }
 
 }

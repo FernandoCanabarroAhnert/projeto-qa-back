@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ValidationError> unprocessableEntityException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String error = "Bad Request";
-        ValidationError validationError = new ValidationError(Instant.now(), status.value(), error, "Validation failed", request.getRequestURI());
+        ValidationError validationError = new ValidationError(Instant.now(), status.value(), error, "Validação falhou", request.getRequestURI());
         ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
             validationError.addError(fieldError.getField(), fieldError.getDefaultMessage());
         });
@@ -34,7 +34,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardError> badRequestException(BadRequestException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String error = "Bad Request";
-        return ResponseEntity.status(status).body(this.generateStandardError(status, error, ex.getMessage(), request));
+        if (ex.getFieldMessages().isEmpty()) {
+            return ResponseEntity.status(status).body(this.generateStandardError(status, error, ex.getMessage(), request));
+        }
+        ValidationError validationError = new ValidationError(Instant.now(), status.value(), error, "Validação falhou", request.getRequestURI());
+        ex.getFieldMessages().forEach(fieldError -> {
+            validationError.addError(fieldError.getFieldName(), fieldError.getMessage());
+        });
+        return ResponseEntity.status(status).body(validationError);
     }
 
     @ExceptionHandler(NotFoundException.class)
