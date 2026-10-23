@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fapa.back.colaborador.controllers.request.ColaboradorRequest;
 import com.fapa.back.colaborador.domain.Colaborador;

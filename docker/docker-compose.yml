@@ -1,6 +1,6 @@
 services:
   pg-docker:
-    image: postgres:14-alpine
+    image: postgres:18-alpine
     container_name: dev-postgresql
     environment:
       POSTGRES_DB: projeto_qa
@@ -8,7 +8,7 @@ services:
     ports:
       - 5433:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     networks:
       - dev-network
   pgadmin-docker:
