@@ -11,8 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fapa.back.colaborador.controllers.request.ColaboradorComissionadoRequest;
 import com.fapa.back.colaborador.controllers.request.ColaboradorPadraoRequest;
@@ -31,6 +36,7 @@ import java.math.BigDecimal;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Testcontainers
 @AutoConfigureMockMvc
 @Sql(scripts = {"classpath:create_tables.sql", "classpath:insert_data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
@@ -44,6 +50,21 @@ public class ColaboradorControllerIT {
     private ColaboradorPadraoRequest colaboradorPadraoRequest;
     private ColaboradorComissionadoRequest colaboradorComissionadoRequest;
     private ColaboradorProducaoRequest colaboradorProducaoRequest;
+
+    @Container
+    private static PostgreSQLContainer<?> postgreSQLContainer;
+
+    static {
+        postgreSQLContainer = new PostgreSQLContainer<>("postgres:18-alpine");
+        postgreSQLContainer.start();
+    }
+
+    @DynamicPropertySource
+    public static void dynamicPropertySource(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    }
 
     @BeforeEach
     void setup() {
